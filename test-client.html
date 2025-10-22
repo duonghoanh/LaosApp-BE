@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LaosApp - Test Client</title>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        background: #f5f5f5;
+      }
+      .container {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+      }
+      h2 {
+        color: #333;
+        border-bottom: 2px solid #007bff;
+        padding-bottom: 10px;
+      }
+      button {
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        margin: 5px;
+      }
+      button:hover {
+        background: #0056b3;
+      }
+      input,
+      textarea {
+        width: 100%;
+        padding: 8px;
+        margin: 5px 0;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+      }
+      .log {
+        background: #f8f9fa;
+        padding: 10px;
+        border-radius: 4px;
+        height: 200px;
+        overflow-y: auto;
+        font-family: monospace;
+        font-size: 12px;
+      }
+      .log-item {
+        padding: 5px;
+        border-bottom: 1px solid #eee;
+      }
+      .success {
+        color: #28a745;
+      }
+      .error {
+        color: #dc3545;
+      }
+      .info {
+        color: #007bff;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🎡 LaosApp - Test Client</h1>
+
+    <div class="container">
+      <h2>Connection</h2>
+      <button onclick="connectAll()">Connect All Namespaces</button>
+      <button onclick="disconnectAll()">Disconnect All</button>
+      <div class="log" id="connectionLog"></div>
+    </div>
+
+    <div class="container">
+      <h2>Room</h2>
+      <input type="text" id="roomId" placeholder="Room ID" />
+      <input type="text" id="userId" placeholder="User ID" />
+      <input type="text" id="nickname" placeholder="Nickname" />
+      <button onclick="joinRoom()">Join Room</button>
+      <button onclick="leaveRoom()">Leave Room</button>
+      <div class="log" id="roomLog"></div>
+    </div>
+
+    <div class="container">
+      <h2>Wheel Spinner</h2>
+      <input type="text" id="wheelId" placeholder="Wheel ID" />
+      <input type="text" id="spinRoomId" placeholder="Room ID" />
+      <button onclick="spinWheel()">🎡 SPIN!</button>
+      <div class="log" id="wheelLog"></div>
+    </div>
+
+    <div class="container">
+      <h2>Chat</h2>
+      <input type="text" id="chatRoomId" placeholder="Room ID" />
+      <textarea id="message" placeholder="Message"></textarea>
+      <button onclick="sendMessage()">Send Message</button>
+      <button onclick="sendEmoji()">Send 🎉</button>
+      <div class="log" id="chatLog"></div>
+    </div>
+
+    <script>
+      let roomSocket, wheelSocket, chatSocket;
+      const SERVER_URL = 'http://localhost:20251';
+
+      function log(containerId, message, type = 'info') {
+        const container = document.getElementById(containerId);
+        const item = document.createElement('div');
+        item.className = `log-item ${type}`;
+        item.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+        container.appendChild(item);
+        container.scrollTop = container.scrollHeight;
+      }
+
+      function connectAll() {
+        // Room Socket
+        roomSocket = io(`${SERVER_URL}/room`);
+        roomSocket.on('connect', () =>
+          log('connectionLog', 'Room socket connected', 'success'),
+        );
+        roomSocket.on('participantJoined', (data) => {
+          log('roomLog', `${data.nickname} joined`, 'success');
+        });
+        roomSocket.on('participantLeft', (data) => {
+          log('roomLog', `${data.nickname} left`, 'error');
+        });
+        roomSocket.on('participantsList', (list) => {
+          log('roomLog', `Participants: ${JSON.stringify(list)}`, 'info');
+        });
+
+        // Wheel Socket
+        wheelSocket = io(`${SERVER_URL}/wheel`);
+        wheelSocket.on('connect', () =>
+          log('connectionLog', 'Wheel socket connected', 'success'),
+        );
+        wheelSocket.on('spinStarted', (data) => {
+          log(
+            'wheelLog',
+            `🎡 SPINNING! Rotation: ${data.rotation}°, Duration: ${data.spinDuration}ms`,
+            'info',
+          );
+        });
+        wheelSocket.on('spinResult', (data) => {
+          log(
+            'wheelLog',
+            `🎉 WINNER: ${data.winner.text} by ${data.spinnerNickname}`,
+            'success',
+          );
+        });
+
+        // Chat Socket
+        chatSocket = io(`${SERVER_URL}/chat`);
+        chatSocket.on('connect', () =>
+          log('connectionLog', 'Chat socket connected', 'success'),
+        );
+        chatSocket.on('newMessage', (msg) => {
+          log('chatLog', `${msg.nickname}: ${msg.content}`, 'info');
+        });
+        chatSocket.on('emojiReaction', (data) => {
+          log('chatLog', `${data.nickname} sent ${data.emoji}`, 'success');
+        });
+        chatSocket.on('systemMessage', (msg) => {
+          log('chatLog', `[SYSTEM] ${msg.content}`, 'error');
+        });
+      }
+
+      function disconnectAll() {
+        if (roomSocket) roomSocket.disconnect();
+        if (wheelSocket) wheelSocket.disconnect();
+        if (chatSocket) chatSocket.disconnect();
+        log('connectionLog', 'All sockets disconnected', 'error');
+      }
+
+      function joinRoom() {
+        const roomId = document.getElementById('roomId').value;
+        const userId = document.getElementById('userId').value;
+        const nickname = document.getElementById('nickname').value;
+
+        if (!roomSocket) {
+          log('roomLog', 'Please connect first!', 'error');
+          return;
+        }
+
+        roomSocket.emit(
+          'joinRoom',
+          { roomId, userId, nickname },
+          (response) => {
+            log(
+              'roomLog',
+              `Joined room: ${JSON.stringify(response)}`,
+              'success',
+            );
+          },
+        );
+      }
+
+      function leaveRoom() {
+        if (!roomSocket) return;
+        roomSocket.emit('leaveRoom', {}, () => {
+          log('roomLog', 'Left room', 'error');
+        });
+      }
+
+      function spinWheel() {
+        const wheelId = document.getElementById('wheelId').value;
+        const roomId = document.getElementById('spinRoomId').value;
+        const nickname = document.getElementById('nickname').value;
+        const seed = Math.floor(Math.random() * 100000);
+
+        if (!wheelSocket) {
+          log('wheelLog', 'Please connect first!', 'error');
+          return;
+        }
+
+        wheelSocket.emit(
+          'spin',
+          {
+            wheelId,
+            roomId,
+            seed,
+            spinnerNickname: nickname,
+          },
+          (response) => {
+            log('wheelLog', `Spin initiated: seed=${seed}`, 'info');
+          },
+        );
+      }
+
+      function sendMessage() {
+        const roomId = document.getElementById('chatRoomId').value;
+        const content = document.getElementById('message').value;
+        const nickname = document.getElementById('nickname').value;
+
+        if (!chatSocket) {
+          log('chatLog', 'Please connect first!', 'error');
+          return;
+        }
+
+        chatSocket.emit('sendMessage', { roomId, content, nickname }, () => {
+          document.getElementById('message').value = '';
+        });
+      }
+
+      function sendEmoji() {
+        const roomId = document.getElementById('chatRoomId').value;
+        const nickname = document.getElementById('nickname').value;
+
+        if (!chatSocket) return;
+
+        chatSocket.emit('sendEmoji', {
+          roomId,
+          emoji: '🎉',
+          nickname,
+        });
+      }
+    </script>
+  </body>
+</html>
