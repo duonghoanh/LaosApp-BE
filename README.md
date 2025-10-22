@@ -87,6 +87,7 @@ docker-compose up
 ```
 
 For more details:
+
 - Quick Start Guide: [QUICKSTART.md](./QUICKSTART.md)
 - Docker Guide: [DOCKER.md](./DOCKER.md)
 - API Documentation: [API_GUIDE.md](./API_GUIDE.md)
@@ -235,11 +236,13 @@ See [DOCKER.md](./DOCKER.md) for detailed instructions.
 The application provides both GraphQL and WebSocket endpoints:
 
 ### GraphQL API
+
 - **Endpoint**: `http://localhost:20251/graphql`
 - **Playground**: Available in development mode
 - **Authentication**: Bearer token in Authorization header
 
 ### WebSocket Namespaces
+
 - **Room Events**: `ws://localhost:20251/room`
   - `joinRoom`, `leaveRoom`, `participantJoined`, `participantLeft`
 - **Wheel Events**: `ws://localhost:20251/wheel`
@@ -252,22 +255,24 @@ The application provides both GraphQL and WebSocket endpoints:
 ```graphql
 # User Registration
 mutation {
-  register(input: {
-    email: "user@example.com"
-    nickname: "Player1"
-    password: "password123"
-  }) {
-    user { _id nickname }
+  register(
+    input: {
+      email: "user@example.com"
+      nickname: "Player1"
+      password: "password123"
+    }
+  ) {
+    user {
+      _id
+      nickname
+    }
     accessToken
   }
 }
 
 # Create Room
 mutation {
-  createRoom(input: {
-    name: "My Wheel Room"
-    isPublic: true
-  }) {
+  createRoom(input: { name: "My Wheel Room", isPublic: true }) {
     _id
     code
     name
@@ -276,10 +281,7 @@ mutation {
 
 # Join Room
 mutation {
-  joinRoom(input: {
-    code: "ABC123"
-    nickname: "Player1"
-  }) {
+  joinRoom(input: { code: "ABC123", nickname: "Player1" }) {
     _id
     participants {
       nickname
@@ -290,16 +292,21 @@ mutation {
 
 # Create Wheel
 mutation {
-  createWheel(input: {
-    roomId: "room_id"
-    title: "Lucky Wheel"
-    segments: [
-      { text: "Prize 1", color: "#FF0000", weight: 1, order: 0 }
-      { text: "Prize 2", color: "#00FF00", weight: 2, order: 1 }
-    ]
-  }) {
+  createWheel(
+    input: {
+      roomId: "room_id"
+      title: "Lucky Wheel"
+      segments: [
+        { text: "Prize 1", color: "#FF0000", weight: 1, order: 0 }
+        { text: "Prize 2", color: "#00FF00", weight: 2, order: 1 }
+      ]
+    }
+  ) {
     _id
-    segments { text weight }
+    segments {
+      text
+      weight
+    }
   }
 }
 ```
