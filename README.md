@@ -1,98 +1,171 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# LaosApp Backend
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+A real-time interactive application backend built with NestJS, featuring wheel spin games, chat rooms, and WebSocket support.
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+LaosApp Backend is a comprehensive NestJS application that provides:
+
+- 🎡 **Wheel Spin Game**: Create and manage spinning wheels with customizable prizes
+- 💬 **Real-time Chat**: WebSocket-based chat system with room support
+- 🏠 **Room Management**: Create and join rooms with role-based access (host/participant)
+- 📊 **Spin History**: Track and analyze spin results with statistics
+- 🔐 **User Authentication**: JWT-based authentication with GraphQL
+- 🐳 **Docker Support**: Easy deployment with Docker and Docker Compose
+
+## Tech Stack
+
+- **Framework**: NestJS
+- **Database**: PostgreSQL with TypeORM
+- **API**: GraphQL with Apollo Server
+- **Real-time**: WebSocket (Socket.IO)
+- **Authentication**: JWT with Passport
+- **Package Manager**: pnpm
 
 ## Project setup
 
 ```bash
-$ pnpm install
+pnpm install
 ```
+
+## Environment Setup
+
+1. Copy the example environment file:
+
+```bash
+cp .env.example .env
+```
+
+2. Update the `.env` file with your configuration:
+
+```env
+DATABASE_HOST=localhost
+DATABASE_PORT=5432
+DATABASE_USERNAME=postgres
+DATABASE_PASSWORD=postgres
+DATABASE_NAME=laosapp
+JWT_SECRET=your-secret-key
+```
+
+## Quick Start
+
+For a complete quick start guide, see [QUICKSTART.md](./QUICKSTART.md)
+
+For Docker deployment, see [DOCKER.md](./DOCKER.md)
+
+For API documentation, see [API_GUIDE.md](./API_GUIDE.md)
 
 ## Compile and run the project
 
 ```bash
 # development
-$ pnpm run start
+pnpm run start
 
 # watch mode
-$ pnpm run start:dev
+pnpm run start:dev
 
 # production mode
-$ pnpm run start:prod
+pnpm run start:prod
 ```
 
 ## Run tests
 
 ```bash
 # unit tests
-$ pnpm run test
+pnpm run test
 
 # e2e tests
-$ pnpm run test:e2e
+pnpm run test:e2e
 
 # test coverage
-$ pnpm run test:cov
+pnpm run test:cov
 ```
 
-## Deployment
+## Features
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+### 🎡 Wheel Module
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+- Create custom spinning wheels with prizes
+- Configure prize probabilities
+- Real-time spin results via WebSocket
+- Spin history tracking
+
+### 💬 Chat Module
+
+- Real-time messaging via WebSocket
+- Room-based conversations
+- Emoji reactions
+- Message history
+
+### 🏠 Room Module
+
+- Create and manage rooms
+- Role-based access (host/participant)
+- Real-time room updates
+- Participant management
+
+### 👤 User Module
+
+- User registration and authentication
+- JWT token-based security
+- User profile management
+
+### 📊 Spin History Module
+
+- Track all spin results
+- Statistical analysis
+- Win rate calculations
+- Historical data queries
+
+## API Endpoints
+
+The application provides both GraphQL and WebSocket endpoints:
+
+- **GraphQL Playground**: `http://localhost:3000/graphql`
+- **WebSocket**: `ws://localhost:3000`
+
+For detailed API documentation, see [API_GUIDE.md](./API_GUIDE.md)
+
+## Docker Deployment
 
 ```bash
-$ pnpm install -g @nestjs/mau
-$ mau deploy
+# Development
+docker-compose -f docker-compose.dev.yml up
+
+# Production
+docker-compose up
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+For more details, see [DOCKER.md](./DOCKER.md)
 
 ## Resources
 
-Check out a few resources that may come in handy when working with NestJS:
+- [NestJS Documentation](https://docs.nestjs.com)
+- [GraphQL Documentation](https://graphql.org)
+- [Socket.IO Documentation](https://socket.io)
+- [TypeORM Documentation](https://typeorm.io)
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+## Project Structure
 
-## Support
+```text
+src/
+├── common/          # Shared decorators, guards, and interfaces
+├── config/          # Configuration files (database, GraphQL)
+├── modules/         # Feature modules
+│   ├── user/       # User management and authentication
+│   ├── room/       # Room management
+│   ├── chat/       # Real-time chat
+│   ├── wheel/      # Wheel spin game
+│   └── spin-history/ # Spin history tracking
+└── main.ts         # Application entry point
+```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## Contributing
 
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+1. Create a feature branch from `develop`
+1. Make your changes
+1. Submit a pull request to `develop`
 
 ## License
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+This project is [MIT licensed](LICENSE).
