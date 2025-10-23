@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { GraphQLModule } from '@nestjs/graphql';
@@ -11,6 +11,7 @@ import { RoomModule } from './modules/room/room.module';
 import { WheelModule } from './modules/wheel/wheel.module';
 import { ChatModule } from './modules/chat/chat.module';
 import { SpinHistoryModule } from './modules/spin-history/spin-history.module';
+import { AuthMiddleware } from './common/middleware/auth.middleware';
 
 @Module({
   imports: [
@@ -32,4 +33,8 @@ import { SpinHistoryModule } from './modules/spin-history/spin-history.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(AuthMiddleware).forRoutes('*');
+  }
+}
