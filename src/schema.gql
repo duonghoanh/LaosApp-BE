@@ -1,0 +1,224 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type AuthResponse {
+  accessToken: String!
+  user: User!
+}
+
+type ChatMessage {
+  _id: ID!
+  content: String!
+  createdAt: DateTime!
+  emoji: String
+  nickname: String
+  roomId: ID!
+  type: MessageType!
+  userId: ID
+}
+
+input CreateRoomInput {
+  description: String
+  isPublic: Boolean
+  maxParticipants: Int
+  name: String!
+  password: String
+}
+
+input CreateUserInput {
+  email: String!
+  nickname: String!
+  password: String!
+}
+
+input CreateWheelInput {
+  confettiEnabled: Boolean
+  roomId: ID!
+  segments: [WheelSegmentInput!]!
+  soundEnabled: Boolean
+  spinDuration: Int
+  title: String!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+input GetHistoryInput {
+  limit: Int = 50
+  roomId: ID!
+  skip: Int = 0
+}
+
+input JoinRoomInput {
+  code: String!
+  nickname: String!
+  password: String
+}
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+enum MessageType {
+  SPIN_RESULT
+  SYSTEM
+  TEXT
+  USER_JOINED
+  USER_LEFT
+}
+
+type Mutation {
+  clearHistory(roomId: ID!): Boolean!
+  clearMessages(roomId: ID!): Boolean!
+  closeRoom(roomId: ID!): Room!
+  createRoom(input: CreateRoomInput!): Room!
+  createWheel(input: CreateWheelInput!): Wheel!
+  deleteWheel(wheelId: ID!): Boolean!
+  joinRoom(input: JoinRoomInput!): Room!
+  leaveRoom(roomId: ID!): Room!
+  login(input: LoginInput!): AuthResponse!
+  register(input: CreateUserInput!): AuthResponse!
+  sendMessage(input: SendMessageInput!, nickname: String!): ChatMessage!
+  updateParticipantRole(role: RoomRole!, roomId: ID!, userId: ID!): Room!
+  updateRoom(input: UpdateRoomInput!): Room!
+  updateWheel(input: UpdateWheelInput!): Wheel!
+}
+
+type Participant {
+  joinedAt: DateTime!
+  lastSeenAt: DateTime
+  nickname: String!
+  role: RoomRole!
+  status: ParticipantStatus!
+  userId: ID!
+}
+
+enum ParticipantStatus {
+  OFFLINE
+  ONLINE
+}
+
+type Query {
+  chatMessages(limit: Int = 50, roomId: ID!, skip: Int = 0): [ChatMessage!]!
+  lastSpin(roomId: ID!): SpinHistory
+  me: User!
+  onlineParticipants(roomId: ID!): [Participant!]!
+  publicRooms(limit: Float = 20, skip: Float = 0): [Room!]!
+  room(id: ID!): Room!
+  roomByCode(code: String!): Room!
+  roomStatistics(roomId: ID!): RoomStatistics!
+  spinHistory(input: GetHistoryInput!): [SpinHistory!]!
+  user(id: String!): User!
+  wheel(id: ID!): Wheel!
+  wheelByRoom(roomId: ID!): Wheel!
+}
+
+type Room {
+  _id: ID!
+  code: String!
+  createdAt: DateTime!
+  description: String
+  hostId: ID!
+  isActive: Boolean!
+  isPublic: Boolean!
+  maxParticipants: Float
+  name: String!
+  participants: [Participant!]!
+  password: String
+  updatedAt: DateTime!
+}
+
+enum RoomRole {
+  HOST
+  PLAYER
+  SPECTATOR
+}
+
+type RoomStatistics {
+  lastSpunAt: DateTime!
+  segmentStats: [SegmentStatistics!]!
+  totalSpins: Int!
+}
+
+type SegmentStatistics {
+  count: Int!
+  percentage: Float!
+  segmentId: String!
+  text: String!
+}
+
+input SendMessageInput {
+  content: String!
+  roomId: ID!
+}
+
+type SpinHistory {
+  _id: ID!
+  result: String!
+  roomId: ID!
+  rotation: Int!
+  seed: Int!
+  segmentId: String!
+  spinnerId: ID!
+  spinnerNickname: String!
+  spunAt: DateTime!
+  wheelId: ID!
+}
+
+input UpdateRoomInput {
+  description: String
+  name: String
+  roomId: ID!
+}
+
+input UpdateWheelInput {
+  confettiEnabled: Boolean
+  segments: [WheelSegmentInput!]
+  soundEnabled: Boolean
+  spinDuration: Int
+  title: String
+  wheelId: ID!
+}
+
+type User {
+  _id: ID!
+  avatar: String
+  createdAt: DateTime!
+  email: String!
+  nickname: String!
+  updatedAt: DateTime!
+}
+
+type Wheel {
+  _id: ID!
+  confettiEnabled: Boolean!
+  createdAt: DateTime!
+  roomId: ID!
+  segments: [WheelSegment!]!
+  soundEnabled: Boolean!
+  spinDuration: Int!
+  title: String!
+  updatedAt: DateTime!
+}
+
+type WheelSegment {
+  color: String!
+  icon: String
+  id: ID!
+  order: Int!
+  text: String!
+  weight: Float!
+}
+
+input WheelSegmentInput {
+  color: String!
+  icon: String
+  id: String
+  order: Int!
+  text: String!
+  weight: Float!
+}
